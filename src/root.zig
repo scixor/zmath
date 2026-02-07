@@ -787,8 +787,17 @@ test "zmath.maxFast" {
 }
 
 pub inline fn min(v0: anytype, v1: anytype) @TypeOf(v0, v1) {
-    // This will handle inf & nan
-    return @min(v0, v1); // minps, cmpunordps, andps, andnps, orps
+    // IEEE 754-2008 minNum semantics: NaN is treated as missing data
+    // If one operand is NaN, return the other (non-NaN) value
+    const T = @TypeOf(v0, v1);
+    const len = veclen(T);
+    const v0_nan = v0 != v0;
+    const v1_nan = v1 != v1;
+    // Use minFast result, then fix up NaN cases
+    const fast_result = minFast(v0, v1);
+    // Where v0 is NaN, use v1; where v1 is NaN, use v0; otherwise use fast_result
+    const fix_v0_nan = @select(f32, v0_nan, v1, fast_result);
+    return @select(f32, @as(@Vector(len, bool), @bitCast(v1_nan & ~v0_nan)), v0, fix_v0_nan);
 }
 test "zmath.min" {
     // Calling math.inf causes test to fail!
@@ -831,8 +840,17 @@ test "zmath.min" {
 }
 
 pub inline fn max(v0: anytype, v1: anytype) @TypeOf(v0, v1) {
-    // This will handle inf & nan
-    return @max(v0, v1); // maxps, cmpunordps, andps, andnps, orps
+    // IEEE 754-2008 maxNum semantics: NaN is treated as missing data
+    // If one operand is NaN, return the other (non-NaN) value
+    const T = @TypeOf(v0, v1);
+    const len = veclen(T);
+    const v0_nan = v0 != v0;
+    const v1_nan = v1 != v1;
+    // Use maxFast result, then fix up NaN cases
+    const fast_result = maxFast(v0, v1);
+    // Where v0 is NaN, use v1; where v1 is NaN, use v0; otherwise use fast_result
+    const fix_v0_nan = @select(f32, v0_nan, v1, fast_result);
+    return @select(f32, @as(@Vector(len, bool), @bitCast(v1_nan & ~v0_nan)), v0, fix_v0_nan);
 }
 test "zmath.max" {
     // Calling math.inf causes test to fail!
@@ -4122,7 +4140,8 @@ test "zmath.fftN" {
             -77.254834, 0.000000, -105.489863, 0.000000, -160.874864, 0.000000, -324.901452, 0.000000,
         };
         for (expected, 0..) |e, ie| {
-            try expect(std.math.approxEqAbs(f32, e, im[(ie / 4)][ie % 4], epsilon));
+            const arr: [4]f32 = im[ie / 4];
+            try expect(std.math.approxEqAbs(f32, e, arr[ie % 4], epsilon));
         }
     }
 
@@ -4185,7 +4204,8 @@ test "zmath.fftN" {
             -321.749727, 0.000000, 0.000000, 0.000000, -649.802905, 0.000000, 0.000000, 0.000000,
         };
         for (expected, 0..) |e, ie| {
-            try expect(std.math.approxEqAbs(f32, e, im[(ie / 4)][ie % 4], epsilon));
+            const arr: [4]f32 = im[ie / 4];
+            try expect(std.math.approxEqAbs(f32, e, arr[ie % 4], epsilon));
         }
     }
 }

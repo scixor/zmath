@@ -1,5 +1,8 @@
 # [zmath](https://github.com/zig-gamedev/zmath)
 
+> [!NOTE]
+> This fork is compiled for Zig master branch (currently 0.16.0-dev). Updates will be made irregularly to track master.
+
 SIMD math library for game developers
 
 Tested on x86_64 and AArch64.
