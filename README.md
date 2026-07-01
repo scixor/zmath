@@ -2,6 +2,10 @@
 
 SIMD math library for game developers
 
+> [!NOTE]
+> This is a fork maintained on a best-effort basis to track the Zig `master` branch.
+> Requires Zig `0.17.0-dev.1099+7db2ef610` or newer.
+
 Tested on x86_64 and AArch64.
 
 Provides ~140 optimized routines and ~70 extensive tests.
@@ -114,18 +118,18 @@ pub fn main() !void {
     //
     var z_index: i32 = 0;
     while (z_index < grid_size) : (z_index += 1) {
-        const z = scale * @intToFloat(f32, z_index - grid_size / 2);
+        const z = scale * @floatFromInt(z_index - grid_size / 2);
         const vz = zm.splat(T, z);
 
         var x_index: i32 = 0;
         while (x_index < grid_size) : (x_index += zm.veclen(T)) {
-            const x = scale * @intToFloat(f32, x_index - grid_size / 2);
+            const x = scale * @floatFromInt(x_index - grid_size / 2);
             const vx = zm.splat(T, x) + voffset * zm.splat(T, scale);
 
             const d = zm.sqrt(vx * vx + vz * vz);
             const vy = zm.sin(d - vtime);
 
-            const index = @intCast(usize, x_index + z_index * grid_size);
+            const index: usize = @intCast(x_index + z_index * grid_size);
             zm.store(xslice[index..], vx, 0);
             zm.store(yslice[index..], vy, 0);
             zm.store(zslice[index..], vz, 0);

@@ -17,8 +17,9 @@ pub fn build(b: *std.Build) void {
     };
 
     const options_step = b.addOptions();
-    inline for (std.meta.fields(@TypeOf(options))) |field| {
-        options_step.addOption(field.type, field.name, @field(options, field.name));
+    const info = @typeInfo(@TypeOf(options)).@"struct";
+    inline for (info.field_names, info.field_types) |name, F| {
+        options_step.addOption(F, name, @field(options, name));
     }
 
     const options_module = options_step.createModule();

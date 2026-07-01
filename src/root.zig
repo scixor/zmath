@@ -435,7 +435,7 @@ test "zmath.arrNPtr" {
         try expect(f32ptr[15] == 1.0);
     }
     {
-        const v8 = f32x8s(1.0);
+        var v8 = f32x8s(1.0);
         const f32ptr = arrNPtr(&v8);
         try expect(f32ptr[1] == 1.0);
         try expect(f32ptr[7] == 1.0);
