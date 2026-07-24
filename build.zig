@@ -8,7 +8,7 @@ pub fn build(b: *std.Build) void {
             std.builtin.OptimizeMode,
             "optimize",
             "The optimization level to use for the build",
-        ) orelse .ReleaseFast,
+        ) orelse .fast,
         .enable_cross_platform_determinism = b.option(
             bool,
             "enable_cross_platform_determinism",
