@@ -4,7 +4,7 @@ SIMD math library for game developers
 
 > [!NOTE]
 > This is a fork maintained on a best-effort basis to track the Zig `master` branch.
-> Requires Zig `0.17.0-dev.1099+7db2ef610` or newer.
+> Requires Zig `0.18.0-dev.367+187d0bf9e` or newer.
 
 Tested on x86_64 and AArch64.
 
